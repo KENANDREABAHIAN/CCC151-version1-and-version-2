@@ -1,3 +1,11 @@
+# Ken Andrea Bahian
+# 2nd Year | BS Statistics
+# CCC151 STT-B 
+# ASSIGNMENT NO. 3
+# SSIS VERSION 1
+
+
+
 import csv
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -8,12 +16,12 @@ courses_file = 'courses.csv'
 gender_choices = ['Male', 'Female']
 year_level_choices = ['1st year', '2nd year', '3rd year', '4th year']
 
-def get_course_name(course_code):
+def get_course_code(course_code):
     with open(courses_file, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == course_code:
-                return row[1]
+                return row[0]
     return None
 
 # Student Management System functions
@@ -24,17 +32,28 @@ def create_student():
     year_level = combo_year_level.get()
     course_code = entry_course_code.get()
 
+    if not validate_course_code(course_code):
+        messagebox.showinfo('Error', 'Invalid course code. Please enter a valid course code.')
+        return
+
     with open(students_file, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([student_id, name, gender, year_level, course_code])
-    
+
     clear_entries()
     messagebox.showinfo('Success', 'Student created successfully.')
-    
+
+def validate_course_code(course_code):
+    with open(courses_file, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == course_code:
+                return True
+    return False 
  
 def list_students():
     clear_listbox()
-    header = f"{'| ID':<17}{'| Name':<27}{'| Gender':<12}{'| Year Level':<17}{'| Course Name'}"
+    header = f"{'| ID':<17}{'| Name':<27}{'| Gender':<12}{'| Year Level':<17}{'| Course Code'}"
     separator = '-' * (len(header) + 1)
     listbox.insert(tk.END, header)
     listbox.insert(tk.END, separator)
@@ -42,8 +61,8 @@ def list_students():
     with open(students_file, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
-            course_name = get_course_name(row[4])  # Get course name based on course code
-            student_info = f"| {row[0]:<15}| {row[1]:<25}| {row[2]:<10}| {row[3]:<15}| {course_name}"
+            course_code = get_course_code(row[4])  # Get course name based on course code
+            student_info = f"| {row[0]:<15}| {row[1]:<25}| {row[2]:<10}| {row[3]:<15}| {course_code}"
             listbox.insert(tk.END, student_info)
 
     listbox.insert(tk.END, separator)

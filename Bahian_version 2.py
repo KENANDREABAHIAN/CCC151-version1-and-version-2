@@ -1,3 +1,11 @@
+# Ken Andrea Bahian
+# 2nd Year | BS Statistics
+# CCC151 STT-B 
+# ASSIGNMENT NO. 2
+# SSIS VERSION 1
+
+
+
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
@@ -166,6 +174,7 @@ def add_course():
         populate_course_listbox()
         clear_course_entries()
         populate_course_codes()
+        messagebox.showinfo('Success', 'Student created successfully.')
     else:
         messagebox.showerror("Error", "Please fill in all fields.")
         
