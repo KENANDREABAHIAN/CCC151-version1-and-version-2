@@ -1,7 +1,7 @@
 # Ken Andrea Bahian
 # 2nd Year | BS Statistics
 # CCC151 STT-B 
-# ASSIGNMENT NO. 3
+# ASSIGNMENT NO. 2
 # SSIS VERSION 1
 
 
@@ -53,7 +53,7 @@ def validate_course_code(course_code):
  
 def list_students():
     clear_listbox()
-    header = f"{'| ID':<17}{'| Name':<27}{'| Gender':<12}{'| Year Level':<17}{'| Course Code'}"
+    header = f"{'| ID':<14}{'| Name':<33}{'| Gender':<12}{'| Year Level':<14}{'| Course Code'}"
     separator = '-' * (len(header) + 1)
     listbox.insert(tk.END, header)
     listbox.insert(tk.END, separator)
@@ -62,7 +62,7 @@ def list_students():
         reader = csv.reader(file)
         for row in reader:
             course_code = get_course_code(row[4])  # Get course name based on course code
-            student_info = f"| {row[0]:<15}| {row[1]:<25}| {row[2]:<10}| {row[3]:<15}| {course_code}"
+            student_info = f"| {row[0]:<12}| {row[1]:<31}| {row[2]:<10}| {row[3]:<12}| {course_code}"
             listbox.insert(tk.END, student_info)
 
     listbox.insert(tk.END, separator)
@@ -94,9 +94,9 @@ def search_student():
         for row in reader:
             if row[0] == student_id:
                 clear_listbox()
-                listbox.insert(tk.END, f"{'| ID':<17}{'| Name':<27}{'| Gender':<12}{'| Year Level':<17}{'| Course Code'}")
+                listbox.insert(tk.END, f"{'| ID':<14}{'| Name':<33}{'| Gender':<12}{'| Year Level':<14}{'| Course Code'}")
                 listbox.insert(tk.END, '-' * 70)
-                listbox.insert(tk.END, f"| {row[0]:<15}| {row[1]:<25}| {row[2]:<10}| {row[3]:<15}| {row[4]}")
+                listbox.insert(tk.END, f"| {row[0]:<12}| {row[1]:<31}| {row[2]:<10}| {row[3]:<12}| {row[4]}")
                 return
 
     messagebox.showinfo('Not Found', 'Student ID not found.')
@@ -205,7 +205,7 @@ def search_course():
                 clear_listbox()
                 listbox.insert(tk.END, f"{'| Code':<12}{'| Course Name':<25}")
                 listbox.insert(tk.END, '-' * 50)
-                listbox.insert(tk.END, f"| {row[0]:<10}| {row[1]:<25}")
+                listbox.insert(tk.END, f"| {row[0]:<15}| {row[1]:<25}")
                 return
 
     messagebox.showinfo('Not Found', 'Course code not found.')
@@ -277,7 +277,7 @@ def clear_listbox():
 # Create the main window
 root = tk.Tk()
 root.title('Student and Course Management System')
-root.geometry("1375x1000")
+root.geometry("1360x750")
 root.configure(bg='lightpink')
 
 style = ttk.Style()
@@ -399,15 +399,11 @@ listbox.pack(padx=10, pady=10, side=tk.LEFT, fill=tk.BOTH)
 scrollbar = tk.Scrollbar(root)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-scrollbarX = tk.Scrollbar(root)
-scrollbarX.pack(side=tk.BOTTOM, fill=tk.X)
-
 listbox.config(yscrollcommand=scrollbar.set)
 scrollbar.config(command=listbox.yview)
-scrollbarX.config(command=listbox.xview)
 
 # Add the notebook to the root window
-notebook.pack(padx=20, pady=120)
+notebook.pack(padx=20, pady=150)
 
 # Start the main event loop
 root.mainloop()

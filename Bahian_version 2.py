@@ -1,8 +1,8 @@
 # Ken Andrea Bahian
 # 2nd Year | BS Statistics
 # CCC151 STT-B 
-# ASSIGNMENT NO. 2
-# SSIS VERSION 1
+# ASSIGNMENT NO. 3
+# SSIS VERSION 2
 
 
 
@@ -73,6 +73,7 @@ def add_student():
         conn.commit()
         populate_listbox()
         clear_entries()
+        messagebox.showinfo('Success', 'Student added successfully')
     else:
         messagebox.showerror("Error", "Please fill in all fields.")
 
@@ -102,6 +103,7 @@ def update_student():
             conn.commit()
             populate_listbox()
             clear_entries()
+            messagebox.showinfo('Success', 'Student updated successfully')
         else:
             messagebox.showerror("Error", "Please fill in all fields.")
     else:
@@ -114,7 +116,7 @@ def search_student():
     rows = cursor.fetchall()
     for row in rows:
         listbox.insert(tk.END, row)
-
+        
 # Function to delete a student
 def delete_student():
     selected_student = listbox.curselection()
@@ -126,6 +128,7 @@ def delete_student():
             conn.commit()
             populate_listbox()
             clear_entries()
+            messagebox.showinfo('Success', 'Student deleted successfully')
     else:
         messagebox.showerror("Error", "No student selected.")
 
@@ -136,6 +139,7 @@ def clear_entries():
     gender_var.set("")
     year_var.set("")
     course_code_var.set("")
+    search_entry.delete(0, tk.END)
 
 
 # Function to populate course codes
@@ -174,7 +178,7 @@ def add_course():
         populate_course_listbox()
         clear_course_entries()
         populate_course_codes()
-        messagebox.showinfo('Success', 'Student created successfully.')
+        messagebox.showinfo('Success', 'Course created successfully.')
     else:
         messagebox.showerror("Error", "Please fill in all fields.")
         
@@ -201,6 +205,7 @@ def update_course():
             conn.commit()
             populate_course_listbox()
             clear_course_entries()
+            messagebox.showinfo('Success', 'Student updated successfully.')
         else:
             messagebox.showerror("Error", "Please fill in all fields.")
     else:
@@ -217,6 +222,7 @@ def delete_course():
             conn.commit()
             populate_course_listbox()
             clear_course_entries()
+            messagebox.showinfo('Success', 'Course deleted successfully.')
     else:
         messagebox.showerror("Error", "No course selected.")
 
@@ -224,6 +230,7 @@ def delete_course():
 def clear_course_entries():
     course_code_entry.delete(0, tk.END)
     course_name_entry.delete(0, tk.END)
+    search_course_entry.delete(0, tk.END)
 
 # Function to search for a course
 def search_course():
@@ -232,7 +239,7 @@ def search_course():
     rows = cursor.fetchall()
     for row in rows:
         course_listbox.insert(tk.END, row)
-
+        
 # Define a custom font
 custom_font=("Courier New", 12, "bold") 
 
