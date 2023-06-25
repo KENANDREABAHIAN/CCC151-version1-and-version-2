@@ -9,6 +9,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
+from sqlite3 import Error
 from tkinter import ttk
 
 # Database Connection
@@ -67,13 +68,28 @@ def populate_listbox():
 
 # Function to add a student
 def add_student():
-    if name_entry.get() and gender_var.get() and year_var.get() and course_code_var.get():
-        cursor.execute("INSERT INTO students VALUES (?, ?, ?, ?, ?)",
-                       (student_id_entry.get(), name_entry.get(), gender_var.get(), year_var.get(), course_code_var.get()))
-        conn.commit()
-        populate_listbox()
-        clear_entries()
-        messagebox.showinfo('Success', 'Student added successfully')
+    student_id = student_id_entry.get()
+    name = name_entry.get()
+    gender = gender_var.get()
+    year = year_var.get()
+    course_code = course_code_var.get()
+
+    if student_id and name and gender and year and course_code:
+        try:
+            # Check if the student_id already exists
+            cursor.execute("SELECT * FROM students WHERE student_id=?", (student_id,))
+            if cursor.fetchone():
+                messagebox.showerror("Error", "Student ID already exists.")
+            else:
+                # Insert the student into the students table
+                cursor.execute("INSERT INTO students (student_id, name, gender, year_level, course_code) VALUES (?, ?, ?, ?, ?)",
+                               (student_id, name, gender, year, course_code))
+                conn.commit()
+                messagebox.showinfo("Success", "Student added successfully.")
+                populate_listbox()
+                clear_entries()
+        except Error as e:
+            messagebox.showerror("Error", str(e))
     else:
         messagebox.showerror("Error", "Please fill in all fields.")
 
@@ -172,13 +188,25 @@ def populate_course_listbox():
 
 # Function to add a course
 def add_course():
-    if course_code_entry.get() and course_name_entry.get():
-        cursor.execute("INSERT INTO courses VALUES (?, ?)", (course_code_entry.get(), course_name_entry.get()))
-        conn.commit()
-        populate_course_listbox()
-        clear_course_entries()
-        populate_course_codes()
-        messagebox.showinfo('Success', 'Course created successfully.')
+    course_code = course_code_entry.get()
+    course_name = course_name_entry.get()
+
+    if course_code and course_name:
+        try:
+            # Check if the course_code already exists
+            cursor.execute("SELECT * FROM courses WHERE course_code=?", (course_code,))
+            if cursor.fetchone():
+                messagebox.showerror("Error", "Course code already exists.")
+            else:
+                # Insert the course into the courses table
+                cursor.execute("INSERT INTO courses (course_code, course_name) VALUES (?, ?)",
+                               (course_code, course_name))
+                conn.commit()
+                messagebox.showinfo("Success", "Course added successfully.")
+                populate_course_listbox()
+                clear_course_entries()
+        except Error as e:
+            messagebox.showerror("Error", str(e))
     else:
         messagebox.showerror("Error", "Please fill in all fields.")
         
@@ -213,18 +241,28 @@ def update_course():
 
 # Function to delete a course
 def delete_course():
-    selected_course = course_listbox.curselection()
-    if selected_course:
-        course_details = course_listbox.get(selected_course)
-        confirm = messagebox.askyesno("Confirm", "Are you sure you want to delete this course?")
-        if confirm:
-            cursor.execute("DELETE FROM courses WHERE course_code=?", (course_details[0],))
+    selected_item = course_listbox.curselection()
+    if selected_item:
+        course_code = course_listbox.get(selected_item)
+        
+        # Display a confirmation dialog box
+        confirmation = messagebox.askquestion("Confirmation", f"Are you sure you want to delete the course with code {course_code}?")
+        
+        if confirmation == 'yes':
+            # Delete the course from the courses table
+            cursor.execute("DELETE FROM courses WHERE course_code = ?", (course_code[0],))
+            # Delete the associated students from the students table
+            cursor.execute("DELETE FROM students WHERE course_code = ?", (course_code[0],))
             conn.commit()
-            populate_course_listbox()
             clear_course_entries()
-            messagebox.showinfo('Success', 'Course deleted successfully.')
+            populate_course_listbox()
+            messagebox.showinfo("Success", "Course deleted successfully.")
+        else:
+            messagebox.showinfo("Canceled", "Course deletion canceled.")
     else:
         messagebox.showerror("Error", "No course selected.")
+
+        
 
 # Function to clear the course entry fields
 def clear_course_entries():
@@ -304,7 +342,7 @@ search_entry.grid(row=6, column=1, padx=5, pady=5)
 search_button = tk.Button(students_frame, text="Search", command=search_student, bg="lightpink", fg="black", font=custom_font)
 search_button.grid(row=6, column=3, padx=5, pady=5)
 
-listbox = tk.Listbox(students_frame, height=20, width=125, font=("Courier New", 12))
+listbox = tk.Listbox(students_frame, height=20, width=125, font=("Courier New", 13))
 listbox.grid(row=7, column=0, columnspan=5, padx=5, pady=5, sticky="W")
 
 scrollbar = tk.Scrollbar(students_frame)
@@ -349,7 +387,7 @@ search_course_entry.grid(row=6, column=1, padx=5, pady=5)
 search_button = tk.Button(course_frame, text="Search", command=search_course, bg="lightpink", fg="black", font=custom_font)
 search_button.grid(row=6, column=2, padx=5, pady=5)
 
-course_listbox = tk.Listbox(course_frame, height=25, width=125, font=("Courier New", 12))
+course_listbox = tk.Listbox(course_frame, height=25, width=125, font=("Courier New", 13))
 course_listbox.grid(row=7, column=0, columnspan=5, padx=5, pady=5, sticky="W")
 
 scrollbar = tk.Scrollbar(course_frame)

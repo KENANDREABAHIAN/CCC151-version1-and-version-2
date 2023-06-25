@@ -32,6 +32,12 @@ def create_student():
     year_level = combo_year_level.get()
     course_code = entry_course_code.get()
 
+    # Check if student ID already exists
+    if check_existing_student_id(student_id):
+        messagebox.showinfo('Error', 'Student ID already exists. Please enter a unique student ID.')
+        return
+
+    # Check if course code is valid
     if not validate_course_code(course_code):
         messagebox.showinfo('Error', 'Invalid course code. Please enter a valid course code.')
         return
@@ -42,6 +48,14 @@ def create_student():
 
     clear_entries()
     messagebox.showinfo('Success', 'Student created successfully.')
+
+def check_existing_student_id(student_id):
+    with open(students_file, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == student_id:
+                return True
+    return False
 
 def validate_course_code(course_code):
     with open(courses_file, 'r') as file:
@@ -158,12 +172,25 @@ def create_course():
     course_code = entry_code.get()
     course_name = entry_course_name.get()
 
+    # Check if course code already exists
+    if check_existing_course_code(course_code):
+        messagebox.showinfo('Error', 'Course code already exists. Please enter a unique course code.')
+        return
+
     with open(courses_file, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([course_code, course_name])
     
     clear_entries()
     messagebox.showinfo('Success', 'Course created successfully.')
+
+def check_existing_course_code(course_code):
+    with open(courses_file, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == course_code:
+                return True
+    return False
 
 def read_course():
     course_code = entry_search_code.get()
@@ -238,6 +265,27 @@ def update_course():
 def delete_course():
     course_code = entry_code.get()
 
+    students_to_delete = []
+    with open(students_file, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+
+    # Find the students with the same course code and add them to the deletion list
+    for i in range(len(rows)):
+        if rows[i][4] == course_code:
+            students_to_delete.append(i)
+
+    if len(students_to_delete) > 0:
+        # Delete the students with the same course code
+        for index in sorted(students_to_delete, reverse=True):
+            rows.pop(index)
+
+        # Update the student records file
+        with open(students_file, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(rows)
+
+    # Delete the course
     with open(courses_file, 'r') as file:
         reader = csv.reader(file)
         rows = list(reader)
@@ -255,7 +303,7 @@ def delete_course():
             writer.writerows(rows)
         
         clear_entries()
-        messagebox.showinfo('Success', 'Course deleted successfully.')
+        messagebox.showinfo('Success', 'Course and associated students deleted successfully.')
     else:
         messagebox.showinfo('Not Found', 'Course code not found.')
 
