@@ -122,6 +122,11 @@ def update_student():
     year_level = combo_year_level.get()
     course_code = entry_course_code.get()
 
+    # Check if the course code exists in the course management
+    if not validate_course_code(course_code):
+        messagebox.showinfo('Error', 'Invalid course code. Please enter a valid course code.')
+        return
+
     with open(students_file, 'r') as file:
         reader = csv.reader(file)
         rows = list(reader)
@@ -142,6 +147,15 @@ def update_student():
         messagebox.showinfo('Success', 'Student updated successfully.')
     else:
         messagebox.showinfo('Not Found', 'Student ID not found.')
+
+def validate_course_code(course_code):
+    with open(courses_file, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == course_code:
+                return True
+    return False
+
 
 def delete_student():
     student_id = entry_id.get()
@@ -168,9 +182,15 @@ def delete_student():
         messagebox.showinfo('Not Found', 'Student ID not found.')
 
 # Course Management System functions
+
 def create_course():
     course_code = entry_code.get()
     course_name = entry_course_name.get()
+
+    # Check if any input field is empty
+    if not course_code or not course_name:
+        messagebox.showinfo('Error', 'Please fill in all the input fields.')
+        return
 
     # Check if course code already exists
     if check_existing_course_code(course_code):
@@ -230,7 +250,7 @@ def search_course():
         for row in reader:
             if row[0] == course_code:
                 clear_listbox()
-                listbox.insert(tk.END, f"{'| Code':<12}{'| Course Name':<25}")
+                listbox.insert(tk.END, f"{'| Code':<17}{'| Course Name':<25}")
                 listbox.insert(tk.END, '-' * 50)
                 listbox.insert(tk.END, f"| {row[0]:<15}| {row[1]:<25}")
                 return
@@ -297,7 +317,10 @@ def delete_course():
             found = True
             break
 
-    if found:
+    if found: # Ask for confirmation before deleting
+        confirmation = messagebox.askyesno('Confirmation', 'Are you sure you want to delete the course and associated students?')
+
+    if confirmation:
         with open(courses_file, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(rows)
@@ -441,7 +464,7 @@ button_clear_course = tk.Button(tab_course, text='Clear', bg="lightpink", fg="bl
 button_clear_course.grid(row=7, column=0, padx=5, pady=5, sticky='w')
 
 # Create the listbox and scrollbar
-listbox = tk.Listbox(root, width=90, font=("Courier New", 11))
+listbox = tk.Listbox(root, width=90, font=("Courier New", 13))
 listbox.pack(padx=10, pady=10, side=tk.LEFT, fill=tk.BOTH)
 
 scrollbar = tk.Scrollbar(root)

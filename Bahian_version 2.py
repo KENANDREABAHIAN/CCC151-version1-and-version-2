@@ -127,11 +127,21 @@ def update_student():
 
 # Function to search for a student
 def search_student():
+    search_term = search_entry.get()  # Get the search term from an entry widget 
+
+    if not search_term:
+        listbox.delete(0, tk.END)  # Clear the listbox if the search term is empty
+        messagebox.showerror("Error", "Please enter a search term.")  # Show an error messagebox if no search term is entered
+        return
+
     listbox.delete(0, tk.END)
-    cursor.execute("SELECT * FROM students WHERE student_id=?", (search_entry.get(),))
+    cursor.execute("SELECT * FROM students WHERE student_id=?", (search_term,))
     rows = cursor.fetchall()
     for row in rows:
         listbox.insert(tk.END, row)
+    else:
+        messagebox.showerror("Error", "Student not found")   
+    
         
 # Function to delete a student
 def delete_student():
@@ -272,11 +282,21 @@ def clear_course_entries():
 
 # Function to search for a course
 def search_course():
+    search_term = search_course_entry.get()  # Get the search term from an entry widget
+
+    if not search_term:
+        course_listbox.delete(0, tk.END)  # Clear the course_listbox if the search term is empty
+        messagebox.showerror("Error", "Please enter a search term.")  # Show an error messagebox if no search term is entered
+        return
+
     course_listbox.delete(0, tk.END)
-    cursor.execute("SELECT * FROM courses WHERE course_code=?", (search_course_entry.get(),))
+    cursor.execute("SELECT * FROM courses WHERE course_code=?", (search_term,))
     rows = cursor.fetchall()
     for row in rows:
         course_listbox.insert(tk.END, row)
+    else:
+        messagebox.showerror("Error", "Course Code not found.")
+
         
 # Define a custom font
 custom_font=("Courier New", 12, "bold") 
